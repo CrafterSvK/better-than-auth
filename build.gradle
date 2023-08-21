@@ -1,6 +1,6 @@
 plugins {
 	id 'babric-loom' version '1.1.+'
-	id 'java'
+	id 'org.jetbrains.kotlin.jvm' version '1.8.21'
 }
 
 group = project.mod_group
@@ -15,7 +15,6 @@ loom {
 
 repositories {
 	mavenCentral()
-	maven { url = "https://jitpack.io" }
 	maven {
 		name = 'Babric'
 		url = 'https://maven.glass-launcher.net/babric'
@@ -35,7 +34,7 @@ repositories {
 	ivy {
 		url = "https://github.com/Turnip-Labs"
 		patternLayout {
-			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
+			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
 			m2compatible = true
 		}
 		metadataSources { artifact() }
@@ -43,7 +42,7 @@ repositories {
 	ivy {
 		url = "https://github.com/Turnip-Labs"
 		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
+			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
 			m2compatible = true
 		}
 		metadataSources { artifact() }
@@ -75,7 +74,7 @@ dependencies {
 
 	// Helper library
 	// If you do not need Halplibe you can comment this line out or delete this line
-	modImplementation "com.github.Turnip-Labs:bta-halplibe:${project.halplibe_version}"
+	modImplementation "bta-halplibe:halplibe:${project.halplibe_version}"
 
 	modImplementation "ModMenu:ModMenu:2.0.0"
 
@@ -89,6 +88,10 @@ dependencies {
 	implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
+
+	modImplementation("net.fabricmc:fabric-language-kotlin:${project.flk_version}+kotlin.${project.kotlin_version}") {
+		exclude(group: "net.fabricmc", module: "fabric-loader")
+	}
 }
 
 java {
@@ -97,7 +100,7 @@ java {
 	withSourcesJar()
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
 	options.release.set 8
 }
 
@@ -114,3 +117,5 @@ processResources {
 		expand "version": version
 	}
 }
+
+compileKotlin.kotlinOptions.jvmTarget = "1.8"

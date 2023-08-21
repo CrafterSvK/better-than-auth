@@ -1,28 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "betterthanauth",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Better Than Auth",
+  "description": "Server side mod for authentication of users.",
   "authors": [
-    "Turnip Labs"
+    "Jakub Janek <jakub@janek.xyz>"
   ],
   "contact": {
     "homepage": "",
-    "sources": ""
+    "sources": "https://github.com/CrafterSvK/better-than-auth"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-        "turniplabs.examplemod.ExampleMod"
+        "xyz.janek.betterthanauth.Mod"
     ]
   },
   "mixins": [
-      "examplemod.mixins.json"
+    "betterthanauth.mixins.json"
   ],
 
   "depends": {
