@@ -1,9 +1,11 @@
 package xyz.janek.betterthanauth.datasource
 
 interface DataSource {
+    fun setup()
+
     fun isRegistered(username: String): Boolean
 
-    fun getPassword(username: String): String
+    fun getPasswordHash(username: String): String
 
-    fun saveCredentials(username: String, password: String): Boolean
+    fun saveCredentials(username: String, passwordHash: String): Boolean
 }

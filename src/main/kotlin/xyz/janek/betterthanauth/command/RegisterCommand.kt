@@ -1,9 +1,10 @@
 package xyz.janek.betterthanauth.command
 
 import net.minecraft.core.net.command.*
+import xyz.janek.betterthanauth.Mod
 import xyz.janek.betterthanauth.Mod.Companion.dataSource
 
-class RegisterCommand : Command("register", "password", "passwordConfirm") {
+class RegisterCommand : Command("register") {
 
     override fun execute(
         handler: CommandHandler?,
@@ -18,27 +19,34 @@ class RegisterCommand : Command("register", "password", "passwordConfirm") {
             return false
         }
 
-        if (strings.size == 2) {
-            val password = strings[0]
-            val passwordConfirm = strings[1]
+        when (strings.size) {
+            2 -> {
+                val (password, passwordConfirm) = strings
 
-            if (password == passwordConfirm) {
-                if (dataSource.isRegistered(sender.player.username)) {
-                    sender.sendMessage("Already registered!")
+                if (password == passwordConfirm) {
+                    val username = sender.player.username
 
-                    return true
+                    if (dataSource.isRegistered(sender.player.username)) {
+                        sender.sendMessage("Already registered!")
+
+                        return true
+                    }
+
+                    val passwordHash = Mod.passwordAuthentication.hash(password.toCharArray())
+
+                    if (dataSource.saveCredentials(username, passwordHash)) {
+                        sender.sendMessage("Successfully registered!")
+                    }
+                } else {
+                    sender.sendMessage("Passwords do not match")
                 }
-
-                if (dataSource.saveCredentials())
-                sender.sendMessage("Successfully registered!")
-            } else {
-                sender.sendMessage("Passwords do not match")
             }
-
-            return true
+            else -> {
+                return false
+            }
         }
 
-        return false
+        return true
     }
 
     override fun opRequired(strings: Array<out String>?): Boolean {

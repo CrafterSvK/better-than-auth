@@ -21,11 +21,10 @@ class SQLite : DataSource {
             throw IllegalStateException("Failed to load SQLite JDBC class", e)
         }
 
-        TODO("Make it config")
         connection = DriverManager.getConnection(getJdbcUrl("better-than-auth", "default"))
     }
 
-    fun setup() {
+    override fun setup() {
         val st = connection.createStatement()
         st.executeUpdate(
             "CREATE TABLE IF NOT EXISTS $tablename (" +
@@ -34,9 +33,9 @@ class SQLite : DataSource {
                     "uuid VARCHAR(128), " +
                     "logged_in INT NOT NULL DEFAULT '0'" +
                     "password_hash VARCHAR(255), " +
-                    "register_at TIMESTAMP NOT NULL, " +
-                    "last_seen_at TIMESTAMP NOT NULL," +
-                    "PRIMARY KEY(id, ASC)"
+                    "register_at TIMESTAMP NOT NULL DEFAULT now(), " +
+                    "last_seen_at TIMESTAMP NOT NULL DEFAULT now()," +
+                    "PRIMARY KEY(id, ASC))"
         )
         LOGGER.info("SQLite migrated")
     }
@@ -46,7 +45,6 @@ class SQLite : DataSource {
     }
 
     override fun isRegistered(username: String): Boolean {
-        TODO("do some error catching")
         val sql = "SELECT * FROM $tablename WHERE LOWER(name) = LOWER(?)"
 
         val stmt = connection.prepareStatement(sql)
@@ -56,8 +54,7 @@ class SQLite : DataSource {
         return rs.next()
     }
 
-    override fun getPassword(username: String): String {
-        TODO("do some error catching")
+    override fun getPasswordHash(username: String): String {
         val sql = "SELECT password_hash FROM $tablename WHERE LOWER(name) = LOWER(?)"
 
         val stmt = connection.prepareStatement(sql)
@@ -69,7 +66,14 @@ class SQLite : DataSource {
         return rs.getString(0)
     }
 
-    override fun saveCredentials(username: String, password: String): Boolean {
-        TODO("please save those credentials")
+    override fun saveCredentials(username: String, passwordHash: String): Boolean {
+        val sql = "INSERT INTO $tablename (username, password_hash) VALUES (?, ?)"
+
+        val stmt = connection.prepareStatement(sql)
+        stmt.setString(1, username)
+        stmt.setString(2, passwordHash)
+        stmt.executeUpdate()
+
+        return true
     }
 }
