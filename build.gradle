@@ -88,6 +88,7 @@ dependencies {
 	implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
+	implementation("org.xerial:sqlite-jdbc:3.43.0.0")
 
 	modImplementation("net.fabricmc:fabric-language-kotlin:${project.flk_version}+kotlin.${project.kotlin_version}") {
 		exclude(group: "net.fabricmc", module: "fabric-loader")
