@@ -17,9 +17,9 @@ class LoginCommand : Command("login") {
             return false
         }
 
-        val username = sender.player.username
+        val name = sender.player.username
 
-        if (!Mod.dataSource.isRegistered(username)) {
+        if (!Mod.dataSource.isRegistered(name)) {
             sender.sendMessage("You are not registered!")
             return true
         }
@@ -27,10 +27,13 @@ class LoginCommand : Command("login") {
         when (strings.size) {
             1 -> {
                 val password = strings[0]
-                val passwordHash = Mod.dataSource.getPasswordHash(username)
+                val passwordHash = Mod.dataSource.getPasswordHash(name)
 
                 if (Mod.passwordAuthentication.authenticate(password.toCharArray(), passwordHash)) {
                     sender.sendMessage("Logged in")
+                }
+                else {
+                    sender.sendMessage("Wrong password!")
                 }
             }
             else -> {

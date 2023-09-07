@@ -24,6 +24,6 @@ class Mod : ModInitializer {
 
     override fun onInitialize() {
         LOGGER.info("Better Than Auth Initialized")
-//        dataSource.setup()
+        dataSource.setup()
     }
 }
