@@ -21,21 +21,20 @@ class SQLite : DataSource {
             throw IllegalStateException("Failed to load SQLite JDBC class", e)
         }
 
-        connection = DriverManager.getConnection(getJdbcUrl("better-than-auth", "default"))
+        connection = DriverManager.getConnection(getJdbcUrl("mods/better-than-auth", "default"))
     }
 
     override fun setup() {
         val st = connection.createStatement()
         st.executeUpdate(
             "CREATE TABLE IF NOT EXISTS $tablename (" +
-                    "id INTEGER AUTO_INCREMENT, " +
+                    "id INTEGER AUTO_INCREMENT PRIMARY KEY, " +
                     "name VARCHAR(16) NOT NULL, " +
                     "uuid VARCHAR(128), " +
-                    "logged_in INT NOT NULL DEFAULT '0'" +
+                    "logged_in INTEGER NOT NULL DEFAULT '0', " +
                     "password_hash VARCHAR(255), " +
-                    "register_at TIMESTAMP NOT NULL DEFAULT now(), " +
-                    "last_seen_at TIMESTAMP NOT NULL DEFAULT now()," +
-                    "PRIMARY KEY(id, ASC))"
+                    "register_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                    "last_seen_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"
         )
         LOGGER.info("SQLite migrated")
     }
@@ -44,33 +43,33 @@ class SQLite : DataSource {
         return "jdbc:sqlite:$path${File.separator}$database.db"
     }
 
-    override fun isRegistered(username: String): Boolean {
+    override fun isRegistered(name: String): Boolean {
         val sql = "SELECT * FROM $tablename WHERE LOWER(name) = LOWER(?)"
 
         val stmt = connection.prepareStatement(sql)
-        stmt.setString(1, username)
+        stmt.setString(1, name)
         val rs = stmt.executeQuery()
 
         return rs.next()
     }
 
-    override fun getPasswordHash(username: String): String {
+    override fun getPasswordHash(name: String): String {
         val sql = "SELECT password_hash FROM $tablename WHERE LOWER(name) = LOWER(?)"
 
         val stmt = connection.prepareStatement(sql)
-        stmt.setString(1, username)
+        stmt.setString(1, name)
         val rs = stmt.executeQuery()
 
         rs.next()
 
-        return rs.getString(0)
+        return rs.getString(1)
     }
 
-    override fun saveCredentials(username: String, passwordHash: String): Boolean {
-        val sql = "INSERT INTO $tablename (username, password_hash) VALUES (?, ?)"
+    override fun saveCredentials(name: String, passwordHash: String): Boolean {
+        val sql = "INSERT INTO $tablename (name, password_hash) VALUES (?, ?)"
 
         val stmt = connection.prepareStatement(sql)
-        stmt.setString(1, username)
+        stmt.setString(1, name)
         stmt.setString(2, passwordHash)
         stmt.executeUpdate()
 

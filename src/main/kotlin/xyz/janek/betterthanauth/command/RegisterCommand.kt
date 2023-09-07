@@ -24,7 +24,7 @@ class RegisterCommand : Command("register") {
                 val (password, passwordConfirm) = strings
 
                 if (password == passwordConfirm) {
-                    val username = sender.player.username
+                    val name = sender.player.username
 
                     if (dataSource.isRegistered(sender.player.username)) {
                         sender.sendMessage("Already registered!")
@@ -34,7 +34,7 @@ class RegisterCommand : Command("register") {
 
                     val passwordHash = Mod.passwordAuthentication.hash(password.toCharArray())
 
-                    if (dataSource.saveCredentials(username, passwordHash)) {
+                    if (dataSource.saveCredentials(name, passwordHash)) {
                         sender.sendMessage("Successfully registered!")
                     }
                 } else {
